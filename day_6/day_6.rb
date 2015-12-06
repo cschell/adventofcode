@@ -16,7 +16,7 @@ module Day6
         print "."
       end
       puts
-      @grid.count_on
+      @grid.count
     end
 
     class Grid
@@ -38,11 +38,11 @@ module Day6
         end
       end
 
-      def count_on
+      def count
         count = 0
 
         @lights.each do |light|
-          count += 1 if light == 1
+          count += light
         end
         count
       end
@@ -68,6 +68,31 @@ module Day6
             print e == 0 ? "." : ","
           end
         end
+      end
+    end
+  end
+
+  class Part2 < Part1
+    def initialize(input)
+      @instructions = input
+      @grid = Grid.new
+    end
+
+    class Grid < Part1::Grid
+      def turn_on(corner_a, corner_b)
+        set_sector(corner_a, corner_b) do |current_value|
+          current_value + 1
+        end
+      end
+
+      def turn_off(corner_a, corner_b)
+        set_sector(corner_a, corner_b) do |current_value|
+          [current_value - 1, 0].max
+        end
+      end
+
+      def toggle(corner_a, corner_b)
+        2.times { turn_on(corner_a, corner_b) }
       end
     end
   end
