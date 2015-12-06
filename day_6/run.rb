@@ -3,6 +3,8 @@
 require "./day_6"
 
 File.open("input.txt") do |file|
-  day6 = Day6.new(file.each_line)
-  puts day6.result
+  puts "Solving part 1..."
+  part1 = Day6::Part1.new(file.each_line)
+  result1 = part1.result
+  puts "Result part 1: #{result1}"
 end
