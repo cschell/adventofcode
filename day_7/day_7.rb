@@ -26,8 +26,14 @@ module Day7
     end
 
     class Wire < Struct.new(:operation)
+      attr_writer :signal
+
       def signal
         @signal ||= operation.call
+      end
+
+      def reset
+        @signal = nil
       end
     end
 
@@ -71,13 +77,12 @@ module Day7
     end
   end
 
-  class Part2
-    def initialize(input)
-      @input = input
-    end
-
+  class Part2 < Part1
     def result
-
+      super
+      @wires["b"].signal = @wires["a"].signal
+      @wires.each {|wire_name, wire| wire.reset unless wire_name == "b" }
+      @wires["a"].signal
     end
   end
 end
