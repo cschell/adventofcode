@@ -1,17 +1,47 @@
 defmodule Location do
   defstruct x: 0, y: 0
+
+  def all_locations_between(location_a = %Location{}, location_b = %Location{}) when location_a == location_b do
+    []
+  end
+
+  def all_locations_between(location_a = %Location{}, location_b = %Location{}) do
+    unless location_a.x == location_b.x or location_a.y == location_b.y do
+      raise "cannot calc locations"
+    end
+
+    locations = cond do
+                  location_a.x - location_b.x > 0 ->
+                    all_locations_between(%Location{x: location_a.x - 1, y: location_a.y}, location_b)
+                  location_a.x - location_b.x < 0 ->
+                    all_locations_between(%Location{x: location_a.x + 1, y: location_a.y}, location_b)
+                  location_a.y - location_b.y > 0 ->
+                    all_locations_between(%Location{x: location_a.x, y: location_a.y - 1}, location_b)
+                  location_a.y - location_b.y < 0 ->
+                    all_locations_between(%Location{x: location_a.x, y: location_a.y + 1}, location_b)
+                end
+
+    [location_a | locations]
+  end
+
+  def find_first_double_visited_location([]), do: :nope
+
+  def find_first_double_visited_location([current_location | locations]) do
+    cond do
+      Enum.find_value(locations, &(&1 == current_location)) ->
+        current_location
+      :default ->
+        find_first_double_visited_location(locations)
+    end
+  end
+
+  def distance_from_zero(location = %Location{}) do
+    abs(location.x) + abs(location.y)
+  end
 end
 
 defmodule Position do
   defstruct heading: 0, location: %Location{x: 0, y: 0}
-
-  def to_string(position = %Position{}) do
-    "(x: #{position.location.x}, y: #{position.location.y}), facing #{position.heading}, #{distance_from_zero(position)} blocks away from zero"
-  end
-
-  def distance_from_zero(position = %Position{}) do
-    abs(position.location.x) + abs(position.location.y)
-  end
 end
 
 defmodule Instruction do
@@ -30,10 +60,11 @@ defmodule Instruction do
     follow(instructions, %Position{})
   end
 
-  def follow([], current_position), do: current_position
+  def follow([], current_position), do: [current_position.location]
 
   def follow([ instruction | instructions ], current_position = %Position{}) do
-    follow(instructions, next_position(instruction, current_position))
+    next_position = next_position(instruction, current_position)
+    List.flatten(Location.all_locations_between(current_position.location, next_position.location), follow(instructions, next_position))
   end
 
   defp next_position(instruction = %Instruction{}, current_position = %Position{}) do
@@ -94,7 +125,10 @@ end
 
 {:ok, raw_instructions} = File.read "./input.txt"
 instructions = Instruction.parse(raw_instructions)
-final_position = Instruction.follow(instructions)
-distance = Position.distance_from_zero(final_position)
+locations = Instruction.follow(instructions)
+
+target_location = Location.find_first_double_visited_location(locations)
+
+distance = Location.distance_from_zero(target_location)
 
 IO.puts "The shortest path is #{distance} blocks."
