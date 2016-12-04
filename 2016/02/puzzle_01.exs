@@ -1,4 +1,4 @@
-defmodule Day02Puzzle2 do
+defmodule Day02Puzzle01 do
   @commands %{
     "U" => %{x:  0, y: -1},
     "D" => %{x:  0, y:  1},
@@ -8,35 +8,27 @@ defmodule Day02Puzzle2 do
   }
 
   @numpad [
-    [nil, nil, 1, nil, nil],
-    [nil,  2,  3,  4 , nil],
-    [  5,  6,  7,  8 , 9  ],
-    [nil, :A, :B, :C , nil],
-    [nil, nil,:D, nil, nil]
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
   ]
 
   def new_position(current_position, command) do
     new_x = current_position.x + command.x
     new_y = current_position.y + command.y
 
-    if new_x < 0 || 4 < new_x do
+    if new_x < 0 || 2 < new_x do
       new_x = current_position.x
     end
 
-    if new_y < 0 || 4 < new_y do
+    if new_y < 0 || 2 < new_y do
       new_y = current_position.y
     end
 
-    new_pos = %{
+    %{
       x: new_x,
       y: new_y
     }
-
-    if get_num(new_pos) do
-      new_pos
-    else
-      current_position
-    end
   end
 
   def get_combination(instruction_sets), do: get_combination(instruction_sets, %{x: 1, y: 1})
@@ -71,4 +63,4 @@ end
 
 {:ok, contents} = File.read("./input.txt")
 IO.puts String.split(contents, "\n") |>
-        Day02Puzzle2.get_combination
+        Day02Puzzle01.get_combination
