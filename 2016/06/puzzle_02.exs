@@ -7,8 +7,9 @@ contents
       |> Enum.with_index
       |> Enum.reduce(register, fn(char_with_index, sub_register) ->
           {char, index} = char_with_index
-          Map.update(sub_register, index, %{[char] => 1, fn(bar_register)->
+          Map.update(sub_register, index, %{[char] => 1}, fn(bar_register)->
             Map.update(bar_register, [char], 1, fn(char_count)->
+              # IO.puts "   I count #{char_count} #{[char]}'s in col #{index}"
               char_count + 1
             end)
           end)
@@ -17,7 +18,7 @@ contents
   |> Enum.map(fn({_index, register}) ->
     register
       |> Enum.to_list
-      |> Enum.sort_by(&(elem(&1, 1)), &>=/2)
+      |> Enum.sort_by(&(elem(&1, 1)), &<=/2)
     end)
   |> Enum.map(&(elem(hd(&1),0)))
   |> Enum.join
