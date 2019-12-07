@@ -20,7 +20,7 @@ ops = [
   Op.new("eqrr", -> (a, b, c, r) {r = r.dup; r[c] = r[a] == r[b] ? 1 : 0; r }),
 ]
 
-instructions = File.readlines("input.txt", chomp: true).map(&:chomp).reject(&:empty?).each_slice(3)
+instructions = File.readlines("input_01.txt", chomp: true).map(&:chomp).reject(&:empty?).each_slice(3)
 
 result_counter = 0
 
